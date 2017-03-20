@@ -1,19 +1,40 @@
 const router = require('express').Router();
+const db = require('./db');
+const User = db.models.User;
 
 // GET /api/users
 router.get('/users', (req, res, next) => {
-  res.send(200).json();
+  User.findAll({
+    include: [
+      { model: User, as: 'manager' },
+      { model: User, as: 'employee' }
+    ],
+    order: '"createdAt" ASC'
+  })
+    .then((users) => {
+      res.send(users)
+    })
 });
 
-// GET /api/managers
-router.get('/managers', (req, res, next) => {
-  res.send(200).json();
-});
 
 // PUT /api/users/:id
 router.put('/users/:id', (req, res, next) => {
-  let id = request.params.id;
-  res.send(200).json({id: id});
+  let id = req.params.id;
+  let managerId = req.body.managerId || null;
+  let promote = req.body.promote || null;
+
+  User.findById(id)
+    .then(user => {
+      if (promote != null) {
+        user.isManager = promote;
+      } else {
+        user.managerId = managerId;
+      }
+      return user.save();
+    })
+    .then(() => {
+      res.status(200).send({ id: id });
+    })
 });
 
 module.exports = router;
