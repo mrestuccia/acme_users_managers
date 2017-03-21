@@ -8,12 +8,12 @@ const render = (containerId, users) => {
   })
   let panels = users.map((user) => {
     let employees = user.employee.map((employee) => {
-      return employee.name
-    }).join(', ')
+      return employee.name;
+    }).join(', ');
     return `<div class="panel panel-default">
     <div class="panel-heading">${user.name}</div>
     <div class="panel-body"><em>manages...</em><br/>${employees}</div>
-    </div>`
+    </div>`;
   });
   container.html(panels);
 };
